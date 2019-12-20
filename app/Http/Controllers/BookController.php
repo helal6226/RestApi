@@ -8,20 +8,24 @@ use App\Comment;
 use App\Author;
 use App\Loan;
 use Illuminate\Support\Str;
-
+use App\Util\OpenLibrary;
 
 class BookController extends Controller
 {
+    protected $openLibrary;
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
 
-    public function __construct()
+    public function __construct(OpenLibrary $openLibrary)
      {
+         $this -> openLibrary = $openLibrary;
          $this->middleware('auth')->except('index');
      }
+
     public function index()
     {
         //
@@ -30,7 +34,7 @@ class BookController extends Controller
        // return view('books.index',['books'=> $books]);
        $books = Book::orderBy('updated_at','desc')->paginate(10);
       
-        return view('books.index',compact('books'));
+       return view('books.index', ['books'=>$books,  'openlibrary'=> $this->openLibrary]);
 
     }
 
@@ -58,8 +62,8 @@ class BookController extends Controller
     {
         //
         $validatedData = $request->validate([
-        'subject' =>'required|max:100',
-        'title' => 'required|max:255',
+        'subject' =>['required','regex:/^\w++(?:[.,_:()\s-](?![.\s-])|\w++)*$/u','max:100'],
+        'title' => ['required','regex:/^\w++(?:[.,_:()\s-](?![.\s-])|\w++)*$/u','max:255'],
         'creation_date'=>'nullable|date',
        // 'loan_id' => 'required|integer',
         ]);
@@ -89,6 +93,17 @@ class BookController extends Controller
         //
 
         $book = Book::findOrFail($id);
+
+        $bookAnalytics = $book->analytics;
+        if($bookAnalytics == null){
+            $bookAnalytics = \App\BookAnalytics::create([
+                'book_id' => $id,
+                'views' => 0,
+            ]);
+        }
+
+        $bookAnalytics->increment('views', 1);
+
         $comments = Comment::where('book_id', $id)->get();
         $loans = Loan::where('book_id', $id)->orderBy('id','desc')->limit(1)->get() ;
         return view('books.show',compact('book','comments','loans'));
@@ -102,8 +117,8 @@ class BookController extends Controller
      */
     public function edit($id)
      {
-         //
-
+         $book = \App\Book::findOrFail($id);
+        return view('books.edit', ['book'=>$book]);
     }
 
     public function bookpicture(Request $request, $id)
@@ -131,17 +146,17 @@ class BookController extends Controller
     public function update(Request $request, Book $book)
     {
         
-        if(Auth::id() != $book->user_id){
+        if(auth()->user()->id != $book->author_id){
 
             return abort(401);
          }
 
-        // $book->update($request->all());
+        $book->update($request->all());
         
-         return redirect()->back;
+         return redirect(route('books.show', $book->id));
          $validatedData = $request->validate([
          'subject' =>'required|max:100',
-         'title' => 'required|max:255',
+         'title' => ['required', 'regex:/^\w++(?:[.,_:()\s-](?![.\s-])|\w++)*$' , 'max:255'],
          'creation_date'=>'nullable|date',
          'author_id' => 'required|integer',
           'loan_id' => 'required|integer',

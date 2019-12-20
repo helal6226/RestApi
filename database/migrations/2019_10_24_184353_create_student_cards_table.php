@@ -23,8 +23,8 @@ class CreateStudentCardsTable extends Migration
             $table->timestamps();
 
             
-            // $table->foreign('student_id')->references('id')->on('students')
-            //     ->onDelete('cascade')->onUpdate('cascade');
+             $table->foreign('student_id')->references('id')->on('students')
+                 ->onDelete('cascade')->onUpdate('cascade');
 
         });
     }

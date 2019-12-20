@@ -11,6 +11,20 @@
         <div class="col-md-4">
             <div class="card">
                 <h4 class="card-body"> <a href="{{ url('books/' . $book->id) }}">{{ $book->title }}</a></h4>
+            <p><span>Read by: </span>{{ $book->analytics == null ? 0: $book->analytics->views }}</p>
+            <?php  $loan = \App\Loan::where('book_id', $book->id)->count()  ?>
+        
+            <p>Currently Brrowed By : {{$loan}} Stundets</p>  
+            
+            <p>ISBN : {{$book->isbn}}</h2>
+                <div>
+               
+                <?php $openBook = $openlibrary->bookInfo($book->isbn);?>
+               
+                @if($openBook && array_key_exists('thumbnail_url', $openBook))
+                <img src="{{ $openBook['thumbnail_url']}}" alt="" style="width:50px">
+                @endif
+                </div>
                 {{-- <div class="mb-3">image*********** --}}
                 {{-- <a href="{{route('books.edit',$book)}}"class="btn btn-warning">{{__('Edit')}}</a> --}}
                 {{-- <form method="post" action="{{route('books.destroy',$book)}}" style="display: inline-block"> --}}
@@ -19,12 +33,13 @@
                     {{-- <button class="btn btn-danger" onclick="return confirm('{{__('Are you sure?')}}')">{{__('Delete')}}</button> --}}
                 {{-- </form> --}}
                 <div class="card-footer">
+
                     @if (auth()->check()) 
-                    <a href="{{ url('loan/' . auth()->user()->id . '/' . $book->id) }}" class="btn btn-primary" >Loan the book<a>
+                    <a href="{{ url('loan/' . auth()->user()->id . '/' . $book->id) }}" class="btn btn-primary pull-left {{ (auth()->user()->is_author )? 'disabled':''}}" >Loan the book<a>
                      @endif
                 {{-- {{ dd($book)}}  --}}
-                {{-- <span class="pull-right"> {{__('Posted by' )}}: {{$book->user->name}} </span> --}}
-                        
+                   <span class="float-right"> {{__('Posted by' )}}: {{$book->author->name}} </span>
+                 
                 </div>
             </div>
 

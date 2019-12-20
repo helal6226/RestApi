@@ -32,19 +32,6 @@ class CommentController extends Controller
      */
     public function create()
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request,Book $book)
-    {
-        //
-
         $request->validate([
             'content' => 'required'
         ]);
@@ -54,6 +41,32 @@ class CommentController extends Controller
 
 
         return redirect()->back();
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        //
+     //   $book = \App\Book::findOrFail(request('book_id'));
+
+        $request->validate([
+            'content' => 'required'
+        ]);
+        $request['student_id'] = Auth::id();
+
+        \App\Comment::create($request->all());
+      //  $book->comments()->create($request->all());
+        // $article->comments()->create($request->all());
+
+
+        return ['data' => 'Comment added'];
+       // return redirect()->back();
 
     }
 
@@ -76,7 +89,7 @@ class CommentController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('comments.edit', ['comment'=>\App\Comment::find($id)]);
     }
 
     /**
@@ -88,7 +101,18 @@ class CommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+       // dd(request()->all());
+
+
+        $request->validate([
+            'content' => 'required'
+        ]);
+       $comment = \App\Comment::find($id);
+       $comment->content = $request->input('content');
+       $comment->save();
+
+        return redirect(route('books.show', $comment->book_id));
+
     }
 
     /**

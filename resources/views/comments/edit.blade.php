@@ -1,23 +1,23 @@
 @extends ('layouts.app')
 
-@section('title',__('Edit book'))
+@section('title',__('Edit Comment'))
 
 @section('content')
+<script>
+    $(function() {
+        $('.focus:first').focus();
+    });
+</script>
 <div class="row m-2">
 
 
     <div class="col-md-8">
-    <form action="{{ route('books.update', $book->id)}}" method="post">
+    <form action="/comments/{{$comment->id}}" method="post">
           
-        @method('PUT')
+        @method('PATCH')
         <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" name="title" class="form-controle" value="{{$book->title}}">
-            </div>
-
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <input type="text" name="subject" class="form-controle" value="{{$book->subject}}">
+                <label for="title">Content</label>
+                <input type="text" name="content" class="form-control focus" value="{{$comment->content}}">
             </div>
 
             <div class="form-group">

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class DropUserTable extends Migration
+class CreateBookAnalyticsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class DropUserTable extends Migration
      */
     public function up()
     {
-        //
-        Schema::dropIfExists('projects');
-        Schema::dropIfExists('departments');
-        Schema::dropIfExists('subjects');
-
+        Schema::create('book_analytics', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedInteger('book_id');
+            $table->unsignedInteger('views');
+            $table->timestamps();
+        });
     }
 
     /**
@@ -27,6 +28,6 @@ class DropUserTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('book_analytics');
     }
 }

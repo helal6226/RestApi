@@ -47,16 +47,19 @@
            
    
     <div class="row">
+        @if(auth()->user()->is_author || auth()->user()->id == $book->author_id)
 
-        
-        <a  class="btn btn-primary" href="{{ route('books.index') }}">Back</a>
+        <a  class="btn btn-success" href="{{ route('books.edit', $book->id) }}">Edit</a>
+        @endif
+    <a  class="btn btn-primary" href="{{ route('books.index') }}">Back</a>
 
+    @if(auth()->user()->is_author || auth()->user()->id == $book->author_id)
     <form action="{{ url('books/' . $book->id) }}" method="post">
         {{ method_field('delete') }}
         {{ csrf_field() }}
         <input type="submit" name="Delete" value="Delete" class="btn btn-danger" onClick = 'return confirm("Are you sure you want to delete this Book")'>
        </form>
-
+    @endif
     </div>
 
     <h3 class="mt-2">{{__('Comments')}}</h3>
@@ -64,23 +67,26 @@
 
         @forelse($book->comments as $comment)
 
-        
-
-
-
           <div class="card p-3 mb-2">
                 {{$comment->content}}
                 <p>{{__('User')}}: {{$comment->user->name}}</p>
                 
           </div>
 
-          @if (auth()->user()->id == $book->author_id)
-            <form action="{{ url('comments/' . $comment->id) }}" method="post">
+          @if (auth()->user()->id == $book->author_id || auth()->user()->id == $comment->user_id)
+         
+          <div class="row">
+              <div class="col-md-1 p-1">
+          <form action="{{ url('comments/' . $comment->id) }}" method="post" >
             {{ method_field('delete') }}
             {{ csrf_field() }}
             <input type="submit" name="Delete" value="Delete" class="btn btn-danger" onClick = 'return confirm("Are you sure you want to delete this Book")'>
            </form>
-
+        </div>
+        <div class="col-md-1 p-1">
+           <a href="/comments/{{$comment->id}}/edit" name="Delete" value="Edit" class="btn btn-primary">Edit</a>
+            </div>
+        </div>
           @endif 
           @empty 
 
@@ -93,8 +99,9 @@
         <div class="card">
             <h5 class="card-header bg-secondary text-white">{{__('Type your comment here')}}</h5>
             <div class="card-body">
-                <form action="{{route('comments.store',$book->id)}}" method="post">
-                    @csrf
+                <form action="{{route('comments.store')}}" method="post" id="comment">
+                   
+                    <input type="hidden" id="token" name="_token" value="{{csrf_token()}}">
 
                     <div class="form-group">
                         <label for="content">{{__('Content')}}</label>
@@ -102,8 +109,9 @@
                                   placeholder="{{__('Type your comment here!')}}"
                                   name="content" id="content" cols="30" rows="10"></textarea>
 
-                                  <input type="hidden" name="author_id" value = "{{ $book->author_id }}" />
-                                  <input type="hidden" name="user_id" value = "{{ auth()->user()->id }}" />
+                                  <input type="hidden" id="book_id" value = "{{ $book->id }}" />
+                                  <input type="hidden" id="author_id" value = "{{ $book->author_id }}" />
+                                  <input type="hidden" id="user_id" value = "{{ auth()->user()->id }}" />
                     </div>
 
                     <div class="form-group">
@@ -127,4 +135,40 @@
 
 </div>
 
+@endsection
+
+
+
+@section('script')
+<script>
+    $(document).ready(function(){
+
+        $('#comment').on('submit', function(e){
+            
+            e.preventDefault();
+            var route = $(this).attr('action');
+            console.log('route =  ', route);
+            var data  = {
+                'content' : $('#content').val(),
+                'book_id': $('#book_id').val(),
+                'user_id': $('#user_id').val(),
+                'author_id': $('#author_id').val(),
+                '_token': $('#token').val()
+            };
+            console.log(data);
+
+            $.ajax({
+                method:'POST',
+                url: route,
+                data: data,
+                success: function(d){
+                    console.log(d);
+                    alert(d.data);
+                }
+            })
+
+        });
+
+    });
+</script>
 @endsection

@@ -76,8 +76,10 @@
     {{-- <ul> --}}
         
         <div class="form-group">
+            @if(auth()->user()->is_author)
                 <button class="btn btn-link btn-lg"> <a href="{{ route('books.create') }}">{{__('Create Book')}} </a></button>
-        </div>
+            @endif
+            </div>
     
         <div class="span30 centered-text mt-3">
             <div>

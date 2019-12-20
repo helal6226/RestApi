@@ -22,7 +22,19 @@ class UserTableSeeder extends Seeder
         $a->is_author = 1;
         $a->save();
 
-        factory(App\User::class,20)->create();
+        factory(App\User::class,10)->create(
+            [
+                'is_author' => 0,
+                'is_student' => 1
+            ]
+        );
+        
+        factory(App\User::class,10)->create(
+            [
+                'is_author' => 1,
+                'is_student' => 0
+            ]
+        );
        
         
     }

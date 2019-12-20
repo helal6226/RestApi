@@ -9,11 +9,15 @@ class Book extends Model
     //
 
     protected $table = 'books';
-    protected $fillable = ['subject','title','creation_date','author_id','picture'];
+    protected $fillable = ['subject','isbn','title','creation_date','author_id','picture'];
     
+    public function analytics(){
+        return $this->hasOne(BookAnalytics::class);
+    }
+
     public function author()
     {
-        return $this->belongsTo(Author::class); 
+        return $this->belongsTo( User::class, 'author_id'); 
 
 
     }

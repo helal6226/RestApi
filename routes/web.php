@@ -54,9 +54,11 @@ Route::delete('articles/{id}', 'ArticleController@destroy')->name('articles.dest
 
 
 //Comments
-Route::post('comments/{book}','CommentController@store')->name('comments.store');
-Route::post('comments/{article}','CommentController@store')->name('comments.store');
+Route::resource('comments', 'CommentController');
+//Route::post('comments/{book}','CommentController@store')->name('comments.store');
+//Route::post('comments/{article}','CommentController@store')->name('comments.store');
 
+Route::get('/bookInfo', 'ApiController@index');
 
 //Home page
 

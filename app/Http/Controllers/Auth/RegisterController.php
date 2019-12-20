@@ -52,9 +52,21 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'type' => 'required'
         ]);
 
+
         $user = User::create(request(['name','email','password']));
+
+        if(request('type') == 'student'){
+            $user->is_student = 1;
+            $user->is_author  = 0;
+        }else if ( request('type') == 'author'){
+            $user->is_student = 0;
+            $user->is_author  = 1;
+        }
+
+        $user->save();
 
         auth()->login($user);
 

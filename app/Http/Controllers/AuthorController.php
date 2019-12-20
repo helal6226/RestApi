@@ -18,7 +18,9 @@ class AuthorController extends Controller
     public function index()
     {
         //
-        $authors = Author::orderBy('updated_at','desc')->paginate(10);
+        $authors = \App\User::where('is_author', 1)
+        ->orderBy('updated_at','desc')
+        ->paginate(10);
         return view('author.index',compact('authors'));
     }
 

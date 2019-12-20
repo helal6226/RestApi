@@ -1,3 +1,9 @@
+<style>
+.inv-msg{
+    color:red;
+    
+}
+</style>
 @extends('layouts.app')
 
 
@@ -14,13 +20,30 @@
 
                          @csrf 
 
-                            <div class="form-group">        
+                           
+                         <div class="form-group">        
+                            <div>
                             <p class="font-weight-bold"><label name="subject"> SUBJECT </label>
                             <input type="text" class="form-control" id="subject" name="subject" value="{{ old('subject') }}"></p>
-                            <p class="font-weight-bold"><label name="title"> TITLE </label>
-                            <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}"></p>
-                            <p class="font-weight-bold"><label name="creation_date"> CREATION DATE </label>
-                            <input type="text" class="form-control" id="reation_date" name="creation_date" value="{{ old('creation_date') }}"></p>
+                           
+                            @error('subject')
+                            <span class="inv-msg" role="alert" style="display:visible">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+                            </div>
+                            <div>
+                                <p class="font-weight-bold"><label name="title"> TITLE </label>
+                                <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}"></p>
+                                @error('title')
+                                <span class="inv-msg" role="alert" style="display:visible">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                            
+                                <p class="font-weight-bold"><label name="creation_date"> CREATION DATE </label>
+                            <input type="date" class="form-control" id="reation_date" name="creation_date" value="{{ old('creation_date') }}"></p>
                             {{-- <p class="font-weight-bold"><label name="author"> CREATION DATE </label>
                                 <input type="text" class="form-control" id="author" name="author_id" value="{{ old('') }}"></p> --}}
                              </div>
